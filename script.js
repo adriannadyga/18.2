@@ -1,10 +1,3 @@
-/*tworzenie obiektu o parametrach:
--nazwa klasy na podstawie której tworzony będzie obiekt
--propsy (właściwości danego elementu)
--dzieci elementu, czyli to, co ma się znaleźć wewnątrz
-var element = React.createElement('div', {}, 'Hello world!');
-*/
-//tablica z filmami ze specjalnymi identyfikatorami pozwalającymi Reactowi na odróżnienie elementów, co zapobiega odświeżaniu wszystkich
 var movies = [
     {
         id: 1,
@@ -32,20 +25,74 @@ var movies = [
     }
 ];
 
-//metoda .map() przyjmująca jako parametr funkcję przez którą przechodzi każdy z elementów tablicy, który jest następnie mapowany do postaci ReactElementu korzystającego z informacji o filmie movie.title i movie.desc; parametr key
-var moviesElements = movies.map(function(movie) {
-    return React.createElement('li', {key:movie.id},
-        React.createElement('h2', {}, movie.title),
-        React.createElement('p', {}, movie.desc),
-        React.createElement('img', {src: movie.poster})
+var MovieTitle = React.createClass({
+    propTypes: {
+        movie: React.PropTypes.string.isRequired,
+    },
+    render: function() {
+        return (
+            React.createElement('h2', {}, this.props.movie)
         );
+    }
 });
 
-var element = 
-    React.createElement('div', {}, 
+var MovieDescription = React.createClass({
+    propTypes: {
+        desc: React.PropTypes.string.isRequired,
+    },
+    render: function() {
+        return (
+            React.createElement('p', {}, this.props.desc)
+        );
+    }
+});
+
+var MovieImage = React.createClass({
+    propTypes: {
+        image: React.PropTypes.string.isRequired,
+    },
+    render: function() {
+        return (
+            React.createElement('img', {src: this.props.poster})
+        );
+    }
+});
+
+var Movie = React.createClass({
+    propTypes: {
+        movie: React.PropTypes.object.isRequired,
+    },
+    render: function() {
+        return (
+            React.createElement('li', {key: this.props.movie.id},
+                React.createElement(MovieTitle, {movie: this.props.movie.title}),
+                React.createElement(MovieDescription, {desc: this.props.movie.desc}),
+                React.createElement(MovieImage, {image: this.props.movie.poster})
+            )
+        );
+    }
+});
+
+var MoviesList = React.createClass({
+    propTypes: {
+        list: React.PropTypes.array.isRequired,
+    },
+    render: function() {
+        var moviesElements = this.props.list.map(function (movie) {
+            return (
+                React.createElement(Movie, {movie: movie, key: movie.id})
+            )
+        });
+        return (
+            React.createElement('ul', {}, moviesElements)
+        )
+    }
+})
+
+var element =
+    React.createElement('div', {},
         React.createElement('h1', {}, 'Lista filmów'),
-        React.createElement('ul', {}, moviesElements)
+        React.createElement(MoviesList, {list: movies})
     );
 
-//renderowanie w drzewie DOM; parametry - react.element i węzeł drzewa DOM do którego element ma się wpiąć
 ReactDOM.render(element, document.getElementById('app'));
